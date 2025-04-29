@@ -1,0 +1,29 @@
+import React from "react";
+import { useSelector } from "react-redux";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import CourseCard from "./CourseCard";
+
+const CoursesList = () => {
+    const { courses, isLoading } = useSelector((state) => state.course);
+    
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Courses</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {courses.map((course) => (
+            <CourseCard key={course.id} course={course} />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+export default CoursesList;

@@ -3,12 +3,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { logout } from "@/redux/slices/authSlice";
+import { getUser, logout } from "@/redux/slices/authSlice";
+import { becomeInstructor } from "@/redux/slices/userSlice";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+
+  const handleBecomeInstructor = () => {
+    try {
+      dispatch(becomeInstructor());
+      toast.success("Become instructor successful");
+      dispatch(getUser());
+      navigate("/instructor/dashboard");
+    } catch (error) {
+      console.log(error);
+      toast.error("Become instructor failed");
+    }
+  };
 
   const handleLogout = () => {
     try {
@@ -22,20 +35,28 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between items-center p-4  max-w-7xl mx-auto">
+    <div className="sticky top-0 flex justify-between items-center p-4 w-auto rounded-md bg-white shadow-md m-4">
       <Link to="/" className="text-2xl font-bold">
         LEARNSPHERE
       </Link>
-      {user && (
-        <div className="flex items-center gap-4">
-          <Link to="/profile">
-            <Button variant="outline">Profile</Button>
-          </Link>
-        </div>
-      )}
+      <div className="flex items-center gap-4 text-md">
+        <Link to="/courses" className="text-muted-foreground hover:underline">
+          Courses
+        </Link>
+      </div>
+
       <div className="flex items-center gap-4">
         {user ? (
           <>
+            {user.isInstructor ? (
+              <Link to="/instructor/dashboard">
+                <Button variant="outline">Instructor Dashboard</Button>
+              </Link>
+            ) : (
+              <Button variant="outline" onClick={handleBecomeInstructor}>
+                Become Instructor
+              </Button>
+            )}
             <p className="text-md text-muted-foreground">
               Welcome, <span className="font-bold">{user.name}</span>
             </p>
