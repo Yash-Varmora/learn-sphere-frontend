@@ -1,108 +1,108 @@
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import {
+  createSession,
+  getSessionById,
+  updateSession,
+} from "@/redux/slices/sessionSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createCourseSchema } from "@/schemas";
+import React, { useEffect, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+} from "../ui/card";
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "../ui/form";
+import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useDispatch } from "react-redux";
-import {
-  createCourse,
-  getCourseById,
-  updateCourse,
-} from "@/redux/slices/courseSlice";
-import { useNavigate, useParams } from "react-router-dom";
-import { useTransition } from "react";
-import { toast } from "react-hot-toast";
+import { sessionSchema } from "@/schemas/sessionSchema";
+import { getCourseById } from "@/redux/slices/courseSlice";
 
-const CourseForm = ({ mode }) => {
-  const { id } = useParams();
+const SessionForm = ({ mode }) => {
+  const { courseId, sessionId } = useParams();
   const dispatch = useDispatch();
+  const { course } = useSelector((state) => state.course);
   const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm({
-    resolver: zodResolver(createCourseSchema),
+    resolver: zodResolver(sessionSchema),
     defaultValues: {
       title: "",
-      description: "",
-      category: "",
+      sessionOrder: 0,
     },
   });
 
   useEffect(() => {
-    if (mode === "edit" && id) {
-      dispatch(getCourseById(id))
+    if (courseId) {
+      dispatch(getCourseById(courseId));
+    }
+    if (mode === "edit" && courseId && sessionId) {
+      dispatch(getSessionById(sessionId))
         .unwrap()
-        .then((course) => {
-          form.setValue("title", course.title);
-          form.setValue("description", course.description);
-          form.setValue("category", course.category);
+        .then((session) => {
+          form.setValue("title", session.title);
+          form.setValue("sessionOrder", session.sessionOrder);
         })
         .catch((error) => {
           toast.error(error.message);
         });
     }
-  }, [id, mode, dispatch, form]);
+  }, [courseId, sessionId, mode, dispatch, form]);
 
   const onSubmit = (data) => {
     startTransition(async () => {
       try {
-        if (mode === "edit" && id) {
-          await dispatch(updateCourse({ id, ...data }))
+        if (mode === "edit" && courseId && sessionId) {
+          await dispatch(updateSession({ courseId, sessionId, data }))
             .unwrap()
             .then(() => {
-              toast.success("Course updated successfully");
-              navigate("/instructor/dashboard");
+              toast.success("Session updated successfully");
             })
             .catch((error) => {
               toast.error(error.message);
+              console.log(error);
             });
         } else {
-          await dispatch(createCourse(data))
+          await dispatch(createSession({ courseId, data }))
             .unwrap()
-            .then((course) => {
-              toast.success("Course created successfully");
-              navigate(`/instructor/course/${course.id}/add-session`);
+            .then(() => {
+              toast.success("Session created successfully");
             })
             .catch((error) => {
-              toast.error("Course creation failed");
+              toast.error("Session creation failed");
               console.log(error);
             });
         }
+        navigate(`/instructor/course/${courseId}/sessions`);
       } catch (error) {
-        toast.error("Course creation failed");
+        toast.error("Session creation failed");
         console.log(error);
       }
     });
   };
 
-
   return (
     <Card className="w-full max-w-md mx-auto mt-10">
       <CardHeader className="flex flex-col items-center justify-between">
         <CardTitle className="text-2xl font-bold">
-          {mode === "edit" ? "Edit Course" : "Create Course"}
+          {mode === "edit" ? "Edit Session" : "Create Session"}
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
           {mode === "edit"
-            ? "Edit the course details"
-            : "Create a new course to start teaching"}
+            ? `Edit the ${course?.title} course session`
+            : `Create a new session for the ${course?.title} course`}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -120,7 +120,7 @@ const CourseForm = ({ mode }) => {
                         type="text"
                         disabled={isPending}
                         {...field}
-                        placeholder="Enter course title"
+                        placeholder="Enter session title"
                       />
                     </FormControl>
                     <FormMessage />
@@ -129,33 +129,16 @@ const CourseForm = ({ mode }) => {
               />
               <FormField
                 control={form.control}
-                name="description"
+                name="sessionOrder"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        disabled={isPending}
-                        {...field}
-                        placeholder="Enter course description"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>SessionOrder</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
+                        type="number"
                         disabled={isPending}
                         {...field}
-                        placeholder="Enter course category"
+                        placeholder="Enter session order"
                       />
                     </FormControl>
                     <FormMessage />
@@ -168,13 +151,9 @@ const CourseForm = ({ mode }) => {
                 className="w-full mt-4"
               >
                 {mode === "edit" ? (
-                  <>
-                    {isPending ? "Updating..." : "Update Course"}
-                  </>
+                  <>{isPending ? "Updating..." : "Update Session"}</>
                 ) : (
-                  <>
-                    {isPending ? "Creating..." : "Create Course"}
-                  </>
+                  <>{isPending ? "Creating..." : "Create Session"}</>
                 )}
               </Button>
             </div>
@@ -185,4 +164,4 @@ const CourseForm = ({ mode }) => {
   );
 };
 
-export default CourseForm;
+export default SessionForm;

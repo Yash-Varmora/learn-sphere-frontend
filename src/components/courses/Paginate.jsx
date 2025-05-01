@@ -19,7 +19,7 @@ const Paginate = () => {
   const { totalPages } = useSelector((state) => state.course);
   
   const query = new URLSearchParams(location.search);
-  const page = query.get("page");
+  const page = query.get("page") || "1";
 
   useEffect(() => {
     dispatch(getCourses(parseInt(page)));
@@ -37,7 +37,7 @@ const Paginate = () => {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(
           <PaginationItem key={`page-${i}`}>
-            <PaginationLink
+            <PaginationLink className="hover:bg-gray-100 hover:cursor-pointer"
               isActive={i.toString() === page}
               onClick={() => handlePageChange(i)}
             >
@@ -49,7 +49,7 @@ const Paginate = () => {
     } else {
       pages.push(
         <PaginationItem key="page-1">
-          <PaginationLink
+          <PaginationLink className="hover:bg-gray-100 hover:cursor-pointer"
             isActive={"1" === page}
             onClick={() => handlePageChange(1)}
           >
@@ -69,7 +69,7 @@ const Paginate = () => {
       for (let i = startPage; i <= endPage; i++) {
         pages.push(
           <PaginationItem key={`page-${i}`}>
-            <PaginationLink
+            <PaginationLink className="hover:bg-gray-100 hover:cursor-pointer"
               isActive={i.toString() === page}
               onClick={() => handlePageChange(i)}
             >
@@ -87,7 +87,7 @@ const Paginate = () => {
       }
       pages.push(
         <PaginationItem key={`page-${totalPages}`}>
-          <PaginationLink
+          <PaginationLink className="hover:bg-gray-100 hover:cursor-pointer"
             isActive={totalPages === page}
             onClick={() => handlePageChange(totalPages)}
           >
@@ -102,15 +102,15 @@ const Paginate = () => {
   return (
     <Pagination>
       <PaginationContent>
-        <PaginationPrevious
+        <PaginationPrevious 
           aria-disabled={page === "1"}
-          className={page === "1" && "opacity-50 pointer-events-none"}
+          className={ `cursor-pointer ${page === "1" && "opacity-50 pointer-events-none"}`}
           onClick={() => handlePageChange(parseInt(page) - 1)}
         />
         {renderPages()}
         <PaginationNext
           aria-disabled={parseInt(page) === totalPages}
-          className={parseInt(page) === totalPages && "opacity-50 pointer-events-none"}
+          className={ `cursor-pointer ${parseInt(page) === totalPages && "opacity-50 pointer-events-none"}`}
           onClick={() => handlePageChange(parseInt(page) + 1)}
         />
       </PaginationContent>

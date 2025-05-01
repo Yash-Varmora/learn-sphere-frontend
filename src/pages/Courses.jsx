@@ -7,7 +7,7 @@ const Courses = () => {
 
 
   return (
-      <div className='flex flex-col gap-4  mx-4'>
+      <div className='flex flex-col gap-4  mx-4 mb-4'>
           <CoursesList />
           <Paginate />
     </div>

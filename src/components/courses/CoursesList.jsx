@@ -14,7 +14,9 @@ const CoursesList = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Courses</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">
+          Courses
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

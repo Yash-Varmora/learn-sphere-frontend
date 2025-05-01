@@ -14,6 +14,8 @@ import ProtectInstructor from "./utils/ProtectInstructor";
 import CourseForm from "./components/instructorDashboard/CourseForm";
 import CourseList from "./components/instructorDashboard/CourseList";
 import Courses from "./pages/Courses";
+import SessionForm from "./components/instructorDashboard/SessionForm";
+import CourseSessionList from "./components/instructorDashboard/CourseSessionList";
 
 const AppContent = () => {
   const location = useLocation();
@@ -46,6 +48,9 @@ const AppContent = () => {
           <Route path="dashboard" element={<div>Dashboard Content</div>} />
           <Route path="add-course" element={<CourseForm mode="add" />} />
           <Route path="edit-course/:id" element={<CourseForm mode="edit" />} />
+          <Route path="course/:courseId/add-session" element={<SessionForm mode="add" />} />
+          <Route path="course/:courseId/edit-session/:sessionId" element={<SessionForm mode="edit" />} />
+          <Route path="course/:courseId/sessions" element={<CourseSessionList />} />
           <Route path="manage-courses" element={<CourseList />} />
         </Route>
 
