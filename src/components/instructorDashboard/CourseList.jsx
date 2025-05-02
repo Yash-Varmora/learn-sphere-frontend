@@ -59,7 +59,7 @@ const CourseList = () => {
     toast.error(error);
   }
   return (
-    <Card className="w-full bg-white p-4">
+    <Card className="flex flex-col w-full bg-white p-4">
       <CardHeader className="flex flex-col md:flex-row justify-between items-center gap-4">
         <CardTitle className="text-2xl font-bold">
           Manage Courses
@@ -95,7 +95,7 @@ const CourseList = () => {
               <CardContent>
                 <CardDescription className="text-md text-gray-600 text-center">{course.description}</CardDescription>
               </CardContent>
-              <CardFooter className="flex justify-center gap-4 mt-4">
+              <CardFooter className="flex flex-wrap justify-center  gap-4 mt-auto">
                 <Button
                   onClick={() =>
                     navigate(`/instructor/course/${course.id}/add-session`)

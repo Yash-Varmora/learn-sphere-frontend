@@ -5,8 +5,6 @@ import CourseCard from "./CourseCard";
 
 const CoursesList = () => {
     const { courses, isLoading } = useSelector((state) => state.course);
-    
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -21,6 +19,7 @@ const CoursesList = () => {
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {courses.map((course) => (
+            
             <CourseCard key={course.id} course={course} />
           ))}
         </div>

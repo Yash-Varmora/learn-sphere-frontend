@@ -69,6 +69,7 @@ const SessionForm = ({ mode }) => {
             .unwrap()
             .then(() => {
               toast.success("Session updated successfully");
+              navigate(`/instructor/course/${courseId}/sessions`);
             })
             .catch((error) => {
               toast.error(error.message);
@@ -77,15 +78,16 @@ const SessionForm = ({ mode }) => {
         } else {
           await dispatch(createSession({ courseId, data }))
             .unwrap()
-            .then(() => {
+            .then((session) => {
               toast.success("Session created successfully");
+              navigate(`/instructor/course/${courseId}/sessions/${session.id}/add-lecture`)
             })
             .catch((error) => {
               toast.error("Session creation failed");
               console.log(error);
             });
         }
-        navigate(`/instructor/course/${courseId}/sessions`);
+        
       } catch (error) {
         toast.error("Session creation failed");
         console.log(error);
@@ -132,7 +134,7 @@ const SessionForm = ({ mode }) => {
                 name="sessionOrder"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>SessionOrder</FormLabel>
+                    <FormLabel>Session Order</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
