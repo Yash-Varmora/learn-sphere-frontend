@@ -22,7 +22,6 @@ import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import { getCourseById } from "@/redux/slices/courseSlice";
 import LectureCard from "./LectureCard";
-import { getLecturesBySession } from "@/redux/slices/lectureSlice";
 
 const CourseSessionList = () => {
   const dispatch = useDispatch();
@@ -30,16 +29,10 @@ const CourseSessionList = () => {
   const { courseId } = useParams();
   const { sessions } = useSelector((state) => state.session);
   const { course } = useSelector((state) => state.course);
-  const {lectures} = useSelector((state) => state.lecture);
-
   useEffect(() => {
     dispatch(getCourseById(courseId));
     dispatch(getSessionsByCourse(courseId));
   }, [courseId, dispatch]);
-
-  const handleAccordionOpen = (sessionId) => {
-    dispatch(getLecturesBySession(sessionId))
-  };
 
   const handleDelete = (id) => {
     dispatch(deleteSession(id))
@@ -62,7 +55,16 @@ const CourseSessionList = () => {
           <CardDescription className="text-sm text-muted-foreground">
             Manage {course?.title} Sessions.
           </CardDescription>
+          {course?.enrollments && (
+            <p className="text-sm text-muted-foreground">
+              Total Enrolled Students:{" "}
+              {Array.isArray(course.enrollments)
+                ? course.enrollments.length
+                : course.enrollments}
+            </p>
+          )}
         </div>
+
         <div className="flex justify-end">
           <Button
             onClick={() =>
@@ -80,7 +82,6 @@ const CourseSessionList = () => {
               key={session.id}
               type="single"
               collapsible
-              onValueChange={() => handleAccordionOpen(session.id)}
               className="border border-gray-200 rounded-md shadow-sm"
             >
               <AccordionItem
@@ -91,8 +92,8 @@ const CourseSessionList = () => {
                   {session.title}
                 </AccordionTrigger>
                 <AccordionContent className="px-4 py-2 bg-gray-50 text-sm text-gray-700">
-                  {lectures && lectures.length > 0 ? (
-                    lectures.map((lecture) => (
+                  {session.lectures && session.lectures.length > 0 ? (
+                    session.lectures.map((lecture) => (
                       <LectureCard
                         key={lecture.id}
                         title={lecture.title}

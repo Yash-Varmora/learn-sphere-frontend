@@ -61,8 +61,21 @@ export const deleteSession = createAsyncThunk(
     }
 );
 
+export const completedSession = createAsyncThunk(
+    "sessions/completed",
+    async (courseId, thunkAPI) => {
+        try {
+            const response = await sessionService.completedSessionByCourse(courseId);
+            return { courseId, sessions: response.data };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+)
+
 const initialState = {
     sessions: [],
+    completedSessions: {},
     loading: false,
     error: null,
 };
@@ -136,7 +149,23 @@ export const sessionSlice = createSlice({
             .addCase(deleteSession.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(completedSession.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(completedSession.fulfilled, (state, action) => {
+                state.loading = false;
+                const { courseId, sessions } = action.payload;
+                state.completedSessions = {
+                    ...state.completedSessions,
+                    [courseId]: sessions,
+                };
+            })
+            .addCase(completedSession.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
+
     }
 })
 

@@ -46,6 +46,7 @@ export const updateLecture = createAsyncThunk(
         }
     }
 );
+
 export const deleteLecture = createAsyncThunk(
     "lectures/delete",
     async (lectureId, thunkAPI) => {
@@ -57,8 +58,35 @@ export const deleteLecture = createAsyncThunk(
         }
     }
 );
+
+export const markLectureAsCompleted = createAsyncThunk(
+    "lectures/markAsCompleted",
+    async (lectureId, thunkAPI) => {
+        try {
+            const response = await lectureService.markLectureAsCompleted(lectureId);
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const getCompletedLectures = createAsyncThunk(
+    "lectures/getCompleted",
+    async (_, thunkAPI) => {
+        try {
+            const response = await lectureService.getCompletedLectures(); 
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
 const initialState = {
     lectures: [],
+    completedLectures: [],
+    currentPlayingLecture: {},
     loading: false,
     error: null,
 };
@@ -66,7 +94,11 @@ const initialState = {
 export const lectureSlice = createSlice({
     name: "lectures",
     initialState,
-    reducers: {},
+    reducers: {
+        setCurrentPlayingUrl: (state, action) => {
+            state.currentPlayingLecture = {...action.payload}
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getLecturesBySession.pending, (state) => {
@@ -129,8 +161,34 @@ export const lectureSlice = createSlice({
             .addCase(deleteLecture.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(markLectureAsCompleted.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(markLectureAsCompleted.fulfilled, (state, action) => {
+                state.loading = false;
+                state.completedLectures = [
+                    ...state.completedLectures,
+                    action.payload,
+                ];
+            })
+            .addCase(markLectureAsCompleted.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(getCompletedLectures.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(getCompletedLectures.fulfilled, (state, action) => {
+                state.loading = false;
+                state.completedLectures = action.payload;
+            })
+            .addCase(getCompletedLectures.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     }
 })
 
+export const { setCurrentPlayingUrl } = lectureSlice.actions;
 export default lectureSlice.reducer;

@@ -9,5 +9,14 @@ export const createCourseSchema = z.object({
     }),
     category: z.string().min(1, {
         message: "Category is required"
-    })
-});
+    }),
+    customCategory: z.string().optional(),
+}).refine((data) => {
+    if (data.category === "other") {
+        return !!data.customCategory?.trim()
+    }
+    return true
+}, {
+    message: "Custom category is required",
+    path: ["customCategory"],
+})

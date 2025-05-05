@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../../schemas";
 import { toast } from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -28,7 +28,10 @@ import { login } from "@/redux/slices/authSlice";
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isPending, startTransition] = useTransition();
+
+  const from = location.state?.from?.pathname || "/";
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -46,7 +49,7 @@ const Login = () => {
           .then(() => {
             
             toast.success("Login successful");
-            navigate("/");
+            navigate(from, { replace: true });
           })
           .catch((error) => {
             toast.error("Login failed");

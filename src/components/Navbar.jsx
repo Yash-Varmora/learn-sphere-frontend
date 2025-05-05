@@ -35,13 +35,16 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky top-0 flex justify-between items-center p-4 w-auto rounded-md bg-white shadow-md m-4">
+    <div className="sticky top-0 flex justify-between items-center p-4 w-auto rounded-md bg-white shadow-md m-4 z-50">
       <Link to="/" className="text-2xl font-bold">
         LEARNSPHERE
       </Link>
       <div className="flex items-center gap-4 text-md">
         <Link to="/courses" className="text-muted-foreground hover:underline">
           Courses
+        </Link>
+        <Link to="/dashboard" className="text-muted-foreground hover:underline">
+          My Learning
         </Link>
       </div>
 

@@ -20,21 +20,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "../ui/button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   createCourse,
+  getAllCategories,
   getCourseById,
   updateCourse,
 } from "@/redux/slices/courseSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTransition } from "react";
 import { toast } from "react-hot-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 const CourseForm = ({ mode }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
+  const { categories } = useSelector((state) => state.course);
 
   const form = useForm({
     resolver: zodResolver(createCourseSchema),
@@ -42,8 +45,21 @@ const CourseForm = ({ mode }) => {
       title: "",
       description: "",
       category: "",
+      customCategory: "",
     },
   });
+
+  const categoryValue = form.watch("category");
+
+  useEffect(() => { 
+    try {
+      dispatch(getAllCategories())
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Failed to fetch categories");
+    }
+    
+  },[dispatch])
 
   useEffect(() => {
     if (mode === "edit" && id) {
@@ -52,7 +68,7 @@ const CourseForm = ({ mode }) => {
         .then((course) => {
           form.setValue("title", course.title);
           form.setValue("description", course.description);
-          form.setValue("category", course.category);
+          form.setValue("category", course.category.name);
         })
         .catch((error) => {
           toast.error(error.message);
@@ -61,10 +77,15 @@ const CourseForm = ({ mode }) => {
   }, [id, mode, dispatch, form]);
 
   const onSubmit = (data) => {
+    const payload = {
+      ...data,
+      category: data.category === "other" ? data.customCategory : data.category,
+    }
+    delete payload.customCategory;
     startTransition(async () => {
       try {
         if (mode === "edit" && id) {
-          await dispatch(updateCourse({ id, ...data }))
+          await dispatch(updateCourse({ id, ...payload }))
             .unwrap()
             .then(() => {
               toast.success("Course updated successfully");
@@ -74,7 +95,7 @@ const CourseForm = ({ mode }) => {
               toast.error(error.message);
             });
         } else {
-          await dispatch(createCourse(data))
+          await dispatch(createCourse(payload))
             .unwrap()
             .then((course) => {
               toast.success("Course created successfully");
@@ -150,18 +171,48 @@ const CourseForm = ({ mode }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        disabled={isPending}
-                        {...field}
-                        placeholder="Enter course category"
-                      />
-                    </FormControl>
+                    <Select value={field.value} onValueChange={(value)=>field.onChange(value)} disabled={isPending}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.name}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                        <SelectItem
+                          value="other"
+                        >
+                          Other
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              {categoryValue === "other" && (
+                <FormField
+                  control={form.control}
+                  name="customCategory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Add Custom Category</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          disabled={isPending}
+                          {...field}
+                          placeholder="Enter custom category"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+             
               <Button
                 type="submit"
                 disabled={isPending}

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Navbar from "./components/Navbar";
@@ -17,6 +17,8 @@ import Courses from "./pages/Courses";
 import SessionForm from "./components/instructorDashboard/SessionForm";
 import CourseSessionList from "./components/instructorDashboard/CourseSessionList";
 import LectureForm from "./components/instructorDashboard/LectureForm";
+import CourseDetail from "./components/courses/CourseDetail";
+import StudentDashboard from "./components/studentDashboard/StudentDashboard";
 
 const AppContent = () => {
   const location = useLocation();
@@ -34,6 +36,15 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/courses" element={<Courses />} />
+        <Route path="/courses/:id" element={<CourseDetail />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <StudentDashboard/>
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/instructor"
@@ -73,6 +84,7 @@ const AppContent = () => {
             </AuthProtect>
           }
         />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   );

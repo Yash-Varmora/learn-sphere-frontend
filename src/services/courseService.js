@@ -24,7 +24,11 @@ const courseService = {
   getInstructorCourses: async () => {
     const response = await api.get("/courses/instructor/courses");
     return response.data;
-    },
+  },
+  getAllCategories: async () => {
+      const response = await api.get("/courses/categories");
+      return response.data;
+  },
 };
 
 export default courseService;

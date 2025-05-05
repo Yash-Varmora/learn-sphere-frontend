@@ -74,9 +74,22 @@ export const deleteCourse = createAsyncThunk(
     }
 );
 
+export const getAllCategories = createAsyncThunk(
+    "courses/categories",
+    async (_, thunkAPI) => {
+        try {
+            const response = await courseService.getAllCategories();
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
 const initialState = {
     courses: [],
     course: null,
+    categories: [],
     loading: false,
     error: null,
 };
@@ -161,6 +174,18 @@ export const courseSlice = createSlice({
                 );
             })
             .addCase(deleteCourse.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+        builder
+            .addCase(getAllCategories.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(getAllCategories.fulfilled, (state, action) => {
+                state.loading = false;
+                state.categories = action.payload;
+            })
+            .addCase(getAllCategories.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

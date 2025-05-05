@@ -21,6 +21,10 @@ const sessionService = {
         const response = await api.delete(`/sessions/${sessionId}`);
         return response.data;
     },
+    completedSessionByCourse: async (courseId) => {
+        const response = await api.get(`sessions/${courseId}/completed`);
+        return response.data
+    } 
 }
 
 export default sessionService;

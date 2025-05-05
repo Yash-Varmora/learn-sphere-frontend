@@ -8,8 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { useNavigate } from "react-router-dom";
 
 const CourseCard = ({ course }) => {
+  
+  const navigate = useNavigate();
+  
+  const handleViewCourse = (id) => {
+    navigate(`/courses/${id}`);
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -24,7 +32,7 @@ const CourseCard = ({ course }) => {
         <CardDescription>{course.description}</CardDescription>
       </CardContent>
       <CardFooter className="flex justify-center gap-4">
-        <Button>View Course</Button>
+        <Button type="button" onClick={()=>handleViewCourse(course.id)}>View Course</Button>
       </CardFooter>
     </Card>
   );

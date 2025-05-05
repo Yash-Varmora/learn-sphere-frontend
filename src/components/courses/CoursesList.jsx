@@ -4,10 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import CourseCard from "./CourseCard";
 
 const CoursesList = () => {
-    const { courses, isLoading } = useSelector((state) => state.course);
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+    const { courses } = useSelector((state) => state.course);
 
   return (
     <Card>

@@ -7,11 +7,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { deleteLecture } from "@/redux/slices/lectureSlice";
+import { deleteLecture, setCurrentPlayingUrl } from "@/redux/slices/lectureSlice";
 
 const LectureCard = ({
   title,
@@ -24,7 +24,15 @@ const LectureCard = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { currentPlayingLecture } = useSelector((state) => state.lecture);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const isPlaying = currentPlayingLecture.lectureUrl === lectureUrl && currentPlayingLecture.lectureId === lectureId;
+  const handlePlay = () => {
+    if (!isPlaying) {
+      dispatch(setCurrentPlayingUrl({ lectureUrl, lectureId }));
+    }
+  };
 
   const handleDelete = (id) => {
     dispatch(deleteLecture(id))
@@ -54,9 +62,11 @@ const LectureCard = ({
           {lectureUrl && (
             <ReactPlayer
               url={lectureUrl}
+              playing={isPlaying}
               controls
               width="100%"
               height="400px"
+              onPlay={handlePlay}
               className="rounded-md"
             />
           )}
@@ -68,9 +78,12 @@ const LectureCard = ({
               </Button>
             </DialogTrigger>
             <DialogContent className="custom-scrollbar overflow-auto h-[85vh] w-[100vw] sm:max-w-3xl">
-              <div
-                dangerouslySetInnerHTML={{ __html: description }}
-              />
+              <DialogHeader>
+                  <DialogTitle className="text-lg font-semibold">
+                    {title} Description
+                  </DialogTitle>
+                </DialogHeader>
+              <div dangerouslySetInnerHTML={{ __html: description }} />
             </DialogContent>
           </Dialog>
 
