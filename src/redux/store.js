@@ -5,6 +5,7 @@ import courseReducer from "./slices/courseSlice";
 import sessionReducer from "./slices/sessionSlice";
 import lectureReducer from "./slices/lectureSlice";
 import enrollmentReducer from "./slices/enrollmentSlice";
+import reviewReducer from "./slices/reviewSlice";
 
 const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
         session: sessionReducer,
         lecture: lectureReducer,
         enrollment: enrollmentReducer,
+        reviews: reviewReducer,
     },
 });
 

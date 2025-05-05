@@ -87,7 +87,7 @@ const LectureCard = ({
           </div>
         </AccordionTrigger>
 
-        {isPreview ||( user && course.enrollments?.some((e) => e.userId === user.id)) ? (
+        {isPreview || (user && user.isInstructor) ||( user && course.enrollments?.some((e) => e.userId === user.id)) ? (
           <AccordionContent className="p-4 space-y-4">
             {lectureUrl && (
               <div className="rounded-md overflow-hidden">

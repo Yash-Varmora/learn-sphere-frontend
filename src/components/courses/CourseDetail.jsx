@@ -1,5 +1,5 @@
-import { getCourseById } from "@/redux/slices/courseSlice";
 import React, { useEffect } from "react";
+import { getCourseById } from "@/redux/slices/courseSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
-import { Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 import {
   completedSession,
   getSessionsByCourse,
@@ -25,6 +25,9 @@ import LectureCard from "./LectureCard";
 import { enrollInCourse } from "@/redux/slices/enrollmentSlice";
 import toast from "react-hot-toast";
 import { getCompletedLectures } from "@/redux/slices/lectureSlice";
+import ReviewForm from "./ReviewForm";
+import ReviewList from "./ReviewList";
+import { format } from "date-fns";
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -34,7 +37,8 @@ const CourseDetail = () => {
   const { course, loading } = useSelector((state) => state.course);
   const { user } = useSelector((state) => state.auth);
   const { sessions } = useSelector((state) => state.session);
-  const {completedLectures} = useSelector((state)=> state.lecture )
+  const { reviews } = useSelector((state) => state.reviews);
+  const { completedLectures } = useSelector((state) => state.lecture);
   const completed =
     useSelector((state) => state.session.completedSessions[course?.id]) || [];
 
@@ -48,9 +52,9 @@ const CourseDetail = () => {
 
   useEffect(() => {
     if (course?.id) {
-      dispatch(completedSession(course.id))
+      dispatch(completedSession(course.id));
     }
-  },[course?.id, dispatch, completedLectures])
+  }, [course?.id, dispatch, completedLectures]);
 
   const isCourseCompleted =
     sessions?.length > 0 &&
@@ -77,13 +81,34 @@ const CourseDetail = () => {
 
   const isSessionCompleted = (id) => completed?.includes(id);
 
+  const userReview =
+    user && reviews.find((review) => review.user?.id === user.id);
+
+  const renderStars = (rating) => {
+    let stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span
+          key={i}
+          className={`text-2xl ${
+            i <= rating ? "text-yellow-500" : "text-gray-300"
+          }`}
+        >
+          <Star />
+        </span>
+      );
+    }
+    return stars;
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center text-gray-500 py-6">Loading...</div>;
   }
+
   return (
     <Card className="max-w-6xl mx-auto mt-10 p-6 shadow-xl rounded-2xl">
       <CardHeader className="flex flex-col items-center space-y-4 bg-gray-600 rounded-2xl p-8">
-        <CardTitle className="text-5xl font-bold text-white">
+        <CardTitle className="text-5  xl font-bold text-white">
           {course?.title}
         </CardTitle>
         <CardDescription className="text-md font-medium text-gray-400">
@@ -104,7 +129,7 @@ const CourseDetail = () => {
           </p>
         </CardDescription>
         {user ? (
-          user && user?.id !== course?.instructor?.userId ? (
+          user?.id !== course?.instructor?.userId ? (
             course?.enrollments?.some(
               (enrollment) => enrollment.userId === user.id
             ) ? (
@@ -112,7 +137,7 @@ const CourseDetail = () => {
                 type="button"
                 variant="secondary"
                 disabled
-                className="text-sm px-6 py-2 mx-auto mt-2"
+                className="mt-4 text-sm px-6 py-2"
               >
                 Enrolled
               </Button>
@@ -120,31 +145,32 @@ const CourseDetail = () => {
               <Button
                 type="button"
                 onClick={handleEnrollNow}
-                className="text-sm px-6 py-2 mx-auto mt-2 hover:bg-primary focus:ring-2 focus:ring-primary"
+                className="mt-4 text-sm px-6 py-2 hover:bg-primary focus:ring-2 focus:ring-primary"
               >
                 Enroll Now
               </Button>
             )
           ) : (
-            <p className="text-white px-6 py-2 mx-auto mt-2">
+            <p className="mt-4 p-4 bg-gray-800 text-white border-2 border-gray-900 rounded-2xl shadow-md text-center font-semibold">
               You are the instructor
             </p>
           )
         ) : (
           <Button
             type="button"
-            className="text-sm px-6 py-2 mx-auto mt-2 hover:bg-primary focus:ring-2 focus:ring-primary"
+            className="mt-4 text-sm px-6 py-2 hover:bg-primary focus:ring-2 focus:ring-primary"
             onClick={() => navigate("/login", { state: { from: location } })}
           >
             Login to Enroll
           </Button>
         )}
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+
+      <CardContent className="flex flex-col gap-6">
         <CardTitle className="text-2xl font-bold text-center">
           Course Sessions
         </CardTitle>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           {sessions && sessions.length > 0 ? (
             sessions.map((session) => (
               <Accordion
@@ -169,7 +195,9 @@ const CourseDetail = () => {
                     }`}
                   >
                     <div className="flex justify-between items-center w-full">
-                      <span className="text-lg">{session.title}</span>
+                      <span className="text-lg font-medium text-gray-800">
+                        {session.title}
+                      </span>
                       <span className="text-sm text-gray-500">
                         {session.lectures.length}{" "}
                         {session.lectures.length > 1 ? "lectures" : "lecture"}
@@ -196,9 +224,12 @@ const CourseDetail = () => {
               </Accordion>
             ))
           ) : (
-            <p>No sessions available for this course.</p>
+            <p className="text-center text-gray-600">
+              No sessions available for this course.
+            </p>
           )}
         </div>
+
         {isCourseCompleted &&
           user &&
           course?.enrollments?.some(
@@ -206,11 +237,51 @@ const CourseDetail = () => {
           ) && (
             <Button
               type="button"
-              className="text-sm px-6 py-2 mx-auto mt-2 hover:bg-primary focus:ring-2 focus:ring-primary"
+              className="mt-6 text-sm px-6 py-2 hover:bg-primary focus:ring-2 focus:ring-primary"
             >
               View Certificate
             </Button>
           )}
+
+        {user && course?.enrollments?.some((e) => e.userId === user.id) && (
+          <div className="mt-10 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-center mb-4">
+              {userReview ? "Your Review" : "Leave a Review"}
+            </h3>
+            {userReview ? (
+              <div className="space-y-6">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Rating
+                  </label>
+                  <div className="flex space-x-1 mt-1">
+                    {renderStars(userReview.rating)}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Date
+                  </label>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {format(new Date(userReview.createdAt), "PPP")}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Review
+                  </label>
+                  <div className="mt-1 p-2 border border-gray-300 rounded-md bg-gray-50 text-sm text-gray-800">
+                    {userReview.review}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <ReviewForm courseId={id} />
+            )}
+          </div>
+        )}
+
+        <ReviewList courseId={id} />
       </CardContent>
     </Card>
   );
