@@ -28,6 +28,7 @@ import { getCompletedLectures } from "@/redux/slices/lectureSlice";
 import ReviewForm from "./ReviewForm";
 import ReviewList from "./ReviewList";
 import { format } from "date-fns";
+import { getAverageRating } from "@/redux/slices/reviewSlice";
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -37,7 +38,7 @@ const CourseDetail = () => {
   const { course, loading } = useSelector((state) => state.course);
   const { user } = useSelector((state) => state.auth);
   const { sessions } = useSelector((state) => state.session);
-  const { reviews } = useSelector((state) => state.reviews);
+  const { reviews, averageRatings } = useSelector((state) => state.reviews);
   const { completedLectures } = useSelector((state) => state.lecture);
   const completed =
     useSelector((state) => state.session.completedSessions[course?.id]) || [];
@@ -47,6 +48,7 @@ const CourseDetail = () => {
       dispatch(getCourseById(id));
       dispatch(getSessionsByCourse(id));
       dispatch(getCompletedLectures());
+      dispatch(getAverageRating(id));
     }
   }, [id, dispatch]);
 
@@ -88,18 +90,20 @@ const CourseDetail = () => {
     let stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
-        <span
+        <Star
           key={i}
           className={`text-2xl ${
-            i <= rating ? "text-yellow-500" : "text-gray-300"
+            i <= rating
+              ? "text-yellow-400 fill-yellow-500 stroke-yellow-500"
+              : "text-gray-300"
           }`}
-        >
-          <Star />
-        </span>
+        />
       );
     }
     return stars;
   };
+
+  const avgRating = averageRatings[course?.id] || 0;
 
   if (loading) {
     return <div className="text-center text-gray-500 py-6">Loading...</div>;
@@ -120,6 +124,13 @@ const CourseDetail = () => {
         <CardDescription className="text-md text-gray-200">
           {course?.description}
         </CardDescription>
+        <CardDescription className="bg-amber-200 text-md flex items-center justify-center gap-2 p-2 rounded-lg shadow-md">
+          <Star className="text-yellow-500 fill-yellow-500 stroke-yellow-500" />
+          <span className="text-lg text-gray-500">
+            {avgRating.toFixed(1)} / 5
+          </span>
+        </CardDescription>
+
         <CardDescription className="text-md text-gray-700 w-auto max-w-xs bg-gray-50 rounded-lg border p-4 flex flex-col items-center gap-2">
           <Users className="inline w-6 h-6 text-primary" />
           <p className="font-medium text-center">
@@ -243,43 +254,45 @@ const CourseDetail = () => {
             </Button>
           )}
 
-        {user && course?.enrollments?.some((e) => e.userId === user.id) && (
-          <div className="mt-10 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-center mb-4">
-              {userReview ? "Your Review" : "Leave a Review"}
-            </h3>
-            {userReview ? (
-              <div className="space-y-6">
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Rating
-                  </label>
-                  <div className="flex space-x-1 mt-1">
-                    {renderStars(userReview.rating)}
+        {user &&
+          course?.enrollments?.some((e) => e.userId === user.id) &&
+          isCourseCompleted && (
+            <div className="mt-10 max-w-2xl mx-auto">
+              <h3 className="text-2xl font-bold text-center mb-4">
+                {userReview ? "Your Review" : "Leave a Review"}
+              </h3>
+              {userReview ? (
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Rating
+                    </label>
+                    <div className="flex space-x-1 mt-1">
+                      {renderStars(userReview.rating)}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Date
+                    </label>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {format(new Date(userReview.createdAt), "PPP")}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Review
+                    </label>
+                    <div className="mt-1 p-2 border border-gray-300 rounded-md bg-gray-50 text-sm text-gray-800">
+                      {userReview.review}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Date
-                  </label>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {format(new Date(userReview.createdAt), "PPP")}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Review
-                  </label>
-                  <div className="mt-1 p-2 border border-gray-300 rounded-md bg-gray-50 text-sm text-gray-800">
-                    {userReview.review}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <ReviewForm courseId={id} />
-            )}
-          </div>
-        )}
+              ) : (
+                <ReviewForm courseId={id} />
+              )}
+            </div>
+          )}
 
         <ReviewList courseId={id} />
       </CardContent>

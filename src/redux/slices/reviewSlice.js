@@ -25,22 +25,23 @@ export const getReviews = createAsyncThunk(
     }
 );
 
-export const addReviewComment = createAsyncThunk(
-    "reviews/addComment",
-    async ({ reviewId, data }, thunkAPI) => {
+export const getAverageRating = createAsyncThunk(
+    "reviews/getAverage",
+    async (courseId, thunkAPI) => {
         try {
-            const response = await reviewService.addReviewComment(reviewId, data);
-            return response.data
+            const response = await reviewService.getAverageRating(courseId);
+            return { courseId, avgRating: response.data.averageRating }
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response?.data || error.message);
         }
     }
-);
+)
 
 const reviewSlice = createSlice({
     name: "reviews",
     initialState: {
         reviews: [],
+        averageRatings: {},
         loading: false,
         error: null,
     },
@@ -70,19 +71,15 @@ const reviewSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-
-            .addCase(addReviewComment.pending, (state) => {
+            .addCase(getAverageRating.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
-            .addCase(addReviewComment.fulfilled, (state, action) => {
+            .addCase(getAverageRating.fulfilled, (state, action) => {
                 state.loading = false;
-                const comment = action.payload;
-                const review = state.reviews.find((r) => r.id === comment.reviewId);
-                if (review) {
-                    review.comments.push(comment);
-                }
+                state.averageRatings[action.payload.courseId] = action.payload.avgRating;
             })
-            .addCase(addReviewComment.rejected, (state, action) => {
+            .addCase(getAverageRating.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

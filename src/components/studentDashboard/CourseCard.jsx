@@ -11,7 +11,7 @@ const CourseCard = ({ enrollment }) => {
   const { course } = enrollment;
 
   const completed =
-    useSelector((state) => state.session.completedSessions[course.id]) || [];
+    useSelector((state) => state.session.completedSessions[course?.id]) || [];
 
   const isCompleted = completed.length === course.sessions.length;
   const progress = (completed.length / (course.sessions.length || 1)) * 100;

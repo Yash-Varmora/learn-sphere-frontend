@@ -9,8 +9,8 @@ const reviewService = {
         const response = await api.get(`reviews/${courseId}/review`)
         return response.data;
     },
-    addReviewComment: async (reviewId,data) => {
-        const response = await api.post(`reviews/${reviewId}/comment`,data)
+    getAverageRating: async (courseId) => {
+        const response = await api.get(`reviews/${courseId}/average_rating`)
         return response.data;
     }
 }
