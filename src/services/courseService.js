@@ -1,8 +1,12 @@
 import api from "./api";
 
 const courseService = {
-  getCourses: async (page) => {
-    const response = await api.get(`/courses?page=${page}`);
+  getCourses: async (page, categoryId) => {
+    let query = `/courses?page=${page}`
+    if (categoryId) {
+      query += `&categoryId=${categoryId}`;
+    }
+    const response = await api.get(query);
     return response.data;
   },  
   getCourseById: async (id) => {

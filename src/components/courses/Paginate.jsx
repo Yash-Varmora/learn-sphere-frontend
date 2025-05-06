@@ -20,14 +20,20 @@ const Paginate = () => {
   
   const query = new URLSearchParams(location.search);
   const page = query.get("page") || "1";
+  const categoryId = query.get("categoryId");
 
   useEffect(() => {
-    dispatch(getCourses(parseInt(page)));
-  }, [dispatch, page]);
+    dispatch(getCourses({page:parseInt(page), categoryId}));
+  }, [dispatch, page,categoryId]);
 
   const handlePageChange = (pageNum) => {
-    if (pageNum !== page) { 
-      navigate(`/courses?page=${pageNum}`);
+    if (pageNum !== page) {
+      const newQuery = new URLSearchParams();
+      newQuery.set("page", pageNum);
+      if (categoryId) {
+        newQuery.set("categoryId", categoryId);
+      }
+      navigate(`/courses?${newQuery.toString()}`);
     }
   };
 

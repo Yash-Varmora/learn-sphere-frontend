@@ -257,37 +257,39 @@ const CourseDetail = () => {
         {user &&
           course?.enrollments?.some((e) => e.userId === user.id) &&
           isCourseCompleted && (
-            <div className="mt-10 max-w-2xl mx-auto">
+            <div className="mt-10 w-sm mx-auto">
               <h3 className="text-2xl font-bold text-center mb-4">
                 {userReview ? "Your Review" : "Leave a Review"}
               </h3>
               {userReview ? (
-                <div className="space-y-6">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Rating
-                    </label>
-                    <div className="flex space-x-1 mt-1">
-                      {renderStars(userReview.rating)}
+                <Card className="text-center space-y-2">
+                  <CardHeader className="space-y-2">
+                    <div>
+                      <CardTitle className="text-sm font-bold text-gray-700">
+                        Rating
+                      </CardTitle>
+                      <CardDescription className="flex justify-center space-x-1 mt-1">
+                        {renderStars(userReview.rating)}
+                      </CardDescription>
                     </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Date
-                    </label>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {format(new Date(userReview.createdAt), "PPP")}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <div>
+                      <CardTitle className="text-sm font-medium text-gray-700">
+                        Date
+                      </CardTitle>
+                      <CardDescription className="mt-1 text-sm text-gray-500">
+                        {format(new Date(userReview.createdAt), "PPP")}
+                      </CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardTitle className="text-sm font-medium text-gray-700">
                       Review
-                    </label>
-                    <div className="mt-1 p-2 border border-gray-300 rounded-md bg-gray-50 text-sm text-gray-800">
+                    </CardTitle>
+                    <CardDescription className="mt-1 rounded-md text-md text-gray-800">
                       {userReview.review}
-                    </div>
-                  </div>
-                </div>
+                    </CardDescription>
+                  </CardContent>
+                </Card>
               ) : (
                 <ReviewForm courseId={id} />
               )}

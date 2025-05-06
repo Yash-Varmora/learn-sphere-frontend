@@ -3,9 +3,9 @@ import courseService from "@/services/courseService";
 
 export const getCourses = createAsyncThunk(
     "courses/get",
-    async (page, thunkAPI) => {
+    async ({page = 1, categoryId}, thunkAPI) => {
         try {
-            const response = await courseService.getCourses(page || 1);
+            const response = await courseService.getCourses(page,categoryId);
             return response.data;
         } catch (error) {
             console.log(error)
