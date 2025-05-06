@@ -47,6 +47,15 @@ export const refreshToken = createAsyncThunk("auth/refreshToken", async (_, thun
     }
 });
 
+export const googleLogin = createAsyncThunk("auth/googleLogin", async (data, thunkAPI) => {
+    try {
+        const response = await authService.googleLogin(data);
+        return response.data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+    }
+})
+
 const authSlice = createSlice({
     name: "auth",
     initialState: {
@@ -81,7 +90,7 @@ const authSlice = createSlice({
         builder.addCase(register.rejected, (state, action) => {
             state.isLoading = false;
             state.error = action.payload;
-        }); 
+        });
         builder.addCase(logout.pending, (state) => {
             state.isLoading = true;
         });
@@ -89,7 +98,7 @@ const authSlice = createSlice({
             state.isLoading = false;
             state.user = null;
             state.isAuthenticated = false;
-        }); 
+        });
         builder.addCase(logout.rejected, (state, action) => {
             state.isLoading = false;
             state.error = action.payload;
@@ -122,6 +131,19 @@ const authSlice = createSlice({
             state.error = action.payload;
             state.user = null;
         });
+        builder.addCase(googleLogin.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(googleLogin.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.user = action.payload;
+            state.isAuthenticated = true;
+        });
+        builder.addCase(googleLogin.rejected, (state, action) => {
+            state.isLoading = false;
+            state.error = action.payload;
+        });
+
     },
 });
 

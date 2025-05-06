@@ -23,7 +23,9 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useDispatch } from "react-redux";
-import { login } from "@/redux/slices/authSlice";
+import { googleLogin, login } from "@/redux/slices/authSlice";
+import { Separator } from "../ui/separator";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -62,6 +64,28 @@ const Login = () => {
     });
   };
 
+  const handleGoogleSuccess = (credentialResponse) => {
+    try {
+      dispatch(googleLogin({ tokenId: credentialResponse.credential }))
+        .unwrap()
+        .then(() => {
+          toast.success("Login successful");
+          navigate(from, { replace: true });
+        })
+        .catch((error) => {
+          toast.error("Login failed");
+          console.log(error);
+        });
+    } catch (error) {
+       toast.error("Login failed");
+       console.log(error);
+    }
+  }
+
+  const handleGoogleError = () => {
+    console.log("Google login failed");
+  }
+
   return (
     <Card className="w-full max-w-md mx-auto mt-10">
       <CardHeader className="flex flex-col items-center justify-between">
@@ -71,56 +95,75 @@ const Login = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        {...field}
-                        placeholder="abc@gmail.com"
-                        disabled={isPending}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        {...field}
-                        placeholder="********"
-                        disabled={isPending}
-                      />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="w-full mt-4"
-              >
-                {isPending ? "Logging in..." : "Login"}
-              </Button>
+        <div className="space-y-4">
+          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap
+            />
+          </GoogleOAuthProvider>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="w-full" />
             </div>
-          </form>
-        </Form>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with email
+              </span>
+            </div>
+          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          {...field}
+                          placeholder="abc@gmail.com"
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          {...field}
+                          placeholder="********"
+                          disabled={isPending}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="w-full mt-4"
+                >
+                  {isPending ? "Logging in..." : "Login"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground">

@@ -20,7 +20,11 @@ const authService = {
     refreshToken: async () => {
         const response = await api.post("/auth/refresh_token");
         return response.data;
-    },  
+    },
+    googleLogin: async (data) => {
+        const response = await api.post("/auth/google", data);
+        return response.data;
+    }
 };
 export default authService;
 
