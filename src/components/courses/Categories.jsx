@@ -56,11 +56,7 @@ const Categories = () => {
           <CarouselContent className="-ml-2 md:-ml-4 my-2">
             <CarouselItem className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6">
               <Card
-                className={`cursor-pointer p-1 md:p-3 h-14 md:h-16 flex items-center justify-center flex-col rounded-lg transition duration-200 hover:shadow-md ${
-                  !selectedCategoryId
-                    ? "ring-2 ring-primary"
-                    : "border border-gray-200"
-                }`}
+                className="cursor-pointer p-1 md:p-3 h-14 md:h-16 flex items-center justify-center flex-col rounded-lg transition duration-200 hover:shadow-md border border-gray-200"
                 onClick={handleShowAll}
               >
                 <h3 className="font-semibold text-center text-md md:text-base">
@@ -76,11 +72,7 @@ const Categories = () => {
                   className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
                 >
                   <Card
-                    className={`cursor-pointer p-1 md:p-3 h-14 md:h-16 flex items-center justify-center flex-col rounded-lg transition duration-200 hover:shadow-md ${
-                      selectedCategoryId === category.id
-                        ? "ring-2 ring-primary"
-                        : "border border-gray-200"
-                    }`}
+                    className="cursor-pointer p-1 md:p-3 h-14 md:h-16 flex items-center justify-center flex-col rounded-lg transition duration-200 hover:shadow-md border border-gray-200"
                     onClick={() => handleCategoryClick(category.id)}
                   >
                     <h3 className="font-semibold text-center text-sm md:text-base truncate w-full px-1">

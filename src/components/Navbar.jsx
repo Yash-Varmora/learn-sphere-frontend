@@ -43,9 +43,9 @@ const Navbar = () => {
         <Link to="/courses" className="text-muted-foreground hover:underline">
           Courses
         </Link>
-        <Link to="/dashboard" className="text-muted-foreground hover:underline">
+        {user && <Link to="/dashboard" className="text-muted-foreground hover:underline">
           My Learning
-        </Link>
+        </Link>}
       </div>
 
       <div className="flex items-center gap-4">

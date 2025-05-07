@@ -105,7 +105,7 @@ export const courseSlice = createSlice({
             })
             .addCase(getCourses.fulfilled, (state, action) => {
                 state.loading = false;
-                state.courses = action.payload.data;
+                state.courses = action.payload;
                 state.totalPages = action.payload.totalPages;
                 state.currentPage = action.payload.page;
             })
