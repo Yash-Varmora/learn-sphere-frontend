@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { deleteLecture, setCurrentPlayingUrl } from "@/redux/slices/lectureSlice";
 import TextEditor from "../editor/TextEditor";
+import { getSessionById } from "@/redux/slices/sessionSlice";
 
 const LectureCard = ({
   title,
@@ -39,6 +40,7 @@ const LectureCard = ({
     dispatch(deleteLecture(id))
       .unwrap()
       .then(() => {
+        dispatch(getSessionById(courseId))
         toast.success("Lecture deleted successfully");
       })
       .catch((error) => {
