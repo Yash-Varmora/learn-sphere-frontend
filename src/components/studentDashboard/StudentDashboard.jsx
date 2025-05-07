@@ -18,7 +18,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     if (enrollments?.length > 0) {
       enrollments.forEach((enrollment) => {
-        const courseId = enrollment.course.id;
+        const courseId = enrollment?.course?.id;
         if (!completedSessions[courseId]) {
           dispatch(completedSession(courseId))
         }
@@ -28,21 +28,21 @@ const StudentDashboard = () => {
 
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 py-6 space-y-8 sm:px-6 lg:px-8">
       <Card className="w-full bg-muted">
         <CardHeader>
-          <CardTitle className="text-center text-xl md:text-2xl lg:text-3xl">
+          <CardTitle className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
             Total Enrolled Courses
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-center text-4xl font-bold text-primary">
+        <CardContent className="text-center text-2xl sm:text-3xl md:text-4xl font-bold text-primary">
           {enrollments?.length || 0}
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {enrollments.map((enrollment) => (
-          <CourseCard key={enrollment.id} enrollment={enrollment} />
+          <CourseCard key={enrollment?.id} enrollment={enrollment} />
         ))}
       </div>
     </div>

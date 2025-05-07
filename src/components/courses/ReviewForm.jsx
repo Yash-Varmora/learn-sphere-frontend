@@ -65,12 +65,12 @@ const ReviewForm = ({ courseId }) => {
         <Star
           key={i}
           onClick={() => handleStarClick(i)}
-          className={`cursor-pointer text-2xl ${
+          className={`cursor-pointer text-lg sm:text-2xl ${
             i <= rating
               ? "text-yellow-400 fill-yellow-500 stroke-yellow-500"
               : "text-gray-300"
           }`}
-           />
+        />
       );
     }
     return stars;
@@ -80,14 +80,14 @@ const ReviewForm = ({ courseId }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 max-w-xl mx-auto mt-6"
+        className="space-y-6 w-full max-w-lg mx-auto mt-6"
       >
         <FormField
           control={form.control}
           name="rating"
           render={() => (
             <FormItem>
-              <FormLabel>Rating</FormLabel>
+              <FormLabel className="text-sm sm:text-base">Rating</FormLabel>
               <FormControl>
                 <div className="flex space-x-1">{renderStars()}</div>
               </FormControl>
@@ -100,11 +100,12 @@ const ReviewForm = ({ courseId }) => {
           name="review"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Review</FormLabel>
+              <FormLabel className="text-sm sm:text-base">Review</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Write your review..."
                   rows={4}
+                  className="text-sm sm:text-base"
                   {...field}
                 />
               </FormControl>
@@ -112,10 +113,9 @@ const ReviewForm = ({ courseId }) => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full text-sm sm:text-base">
           Submit Review
-        </Button>{" "}
-        {/* Ensure button is fully accessible */}
+        </Button>
       </form>
     </Form>
   );

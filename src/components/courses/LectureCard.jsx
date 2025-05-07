@@ -20,6 +20,7 @@ import {
   markLectureAsCompleted,
 } from "@/redux/slices/lectureSlice";
 import toast from "react-hot-toast";
+import TextEditor from "../editor/TextEditor";
 
 const LectureCard = ({
   title,
@@ -87,7 +88,9 @@ const LectureCard = ({
           </div>
         </AccordionTrigger>
 
-        {isPreview || (user && user.isInstructor) ||( user && course.enrollments?.some((e) => e.userId === user.id)) ? (
+        {isPreview ||
+        (user && user.isInstructor) ||
+        (user && course.enrollments?.some((e) => e.userId === user.id)) ? (
           <AccordionContent className="p-4 space-y-4">
             {lectureUrl && (
               <div className="rounded-md overflow-hidden">
@@ -120,23 +123,23 @@ const LectureCard = ({
                       {title} Description
                     </DialogTitle>
                   </DialogHeader>
-                  <div
-                    className="text-sm text-gray-700 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: description }}
-                  />
+                  <TextEditor content={description} editable={false} />
                 </DialogContent>
               </Dialog>
 
-              {!isCompleted && (
-                <Button
-                  variant="success"
-                  size="sm"
-                  onClick={handleMarkAsCompleted}
-                  className="bg-green-600 text-white hover:bg-green-700"
-                >
-                  Mark as Completed
-                </Button>
-              )}
+              {!isCompleted &&
+                course?.enrollments?.some(
+                  (enrollment) => enrollment.userId === user.id
+                ) && (
+                  <Button
+                    variant="success"
+                    size="sm"
+                    onClick={handleMarkAsCompleted}
+                    className="bg-green-600 text-white hover:bg-green-700"
+                  >
+                    Mark as Completed
+                  </Button>
+                )}
             </div>
           </AccordionContent>
         ) : (

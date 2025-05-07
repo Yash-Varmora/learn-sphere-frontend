@@ -5,7 +5,7 @@ export const getCourses = createAsyncThunk(
     "courses/get",
     async ({page = 1, categoryId}, thunkAPI) => {
         try {
-            const response = await courseService.getCourses(page,categoryId);
+            const response = await courseService.getCourses(page, categoryId);
             return response.data;
         } catch (error) {
             console.log(error)
@@ -105,7 +105,7 @@ export const courseSlice = createSlice({
             })
             .addCase(getCourses.fulfilled, (state, action) => {
                 state.loading = false;
-                state.courses = action.payload;
+                state.courses = action.payload.data;
                 state.totalPages = action.payload.totalPages;
                 state.currentPage = action.payload.page;
             })

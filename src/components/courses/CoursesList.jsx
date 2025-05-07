@@ -15,15 +15,15 @@ const CoursesList = () => {
      : null;
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">
+        <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-center">
           {selectedCategory
             ? `${selectedCategory.name} Courses`
             : "All Courses"}
         </CardTitle>
         {selectedCategory && (
-          <p className="text-muted-foreground text-center">
+          <p className="text-sm sm:text-base text-muted-foreground text-center">
             Browse our selection of {selectedCategory.name.toLowerCase()}{" "}
             courses
           </p>
@@ -31,21 +31,19 @@ const CoursesList = () => {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <p>
-              loading...
-            </p>
+          <div className="flex justify-center items-center py-12 sm:py-16 md:py-20">
+            <p className="text-sm sm:text-base">Loading...</p>
           </div>
         ) : courses && courses.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {courses.map((course) => (
               <CourseCard key={course.id} course={course} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
-            <p className="text-xl font-medium">No courses found</p>
-            <p className="text-muted-foreground mt-2">
+          <div className="text-center py-12 sm:py-16 md:py-20">
+            <p className="text-lg sm:text-xl font-medium">No courses found</p>
+            <p className="text-sm sm:text-base text-muted-foreground mt-2">
               {selectedCategory
                 ? `There are no courses available in the ${selectedCategory.name} category.`
                 : "There are no courses available at the moment."}

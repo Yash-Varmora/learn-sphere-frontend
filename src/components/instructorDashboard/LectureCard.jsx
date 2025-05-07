@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { deleteLecture, setCurrentPlayingUrl } from "@/redux/slices/lectureSlice";
+import TextEditor from "../editor/TextEditor";
 
 const LectureCard = ({
   title,
@@ -79,11 +80,11 @@ const LectureCard = ({
             </DialogTrigger>
             <DialogContent className="custom-scrollbar overflow-auto h-[85vh] w-[100vw] sm:max-w-3xl">
               <DialogHeader>
-                  <DialogTitle className="text-lg font-semibold">
-                    {title} Description
-                  </DialogTitle>
-                </DialogHeader>
-              <div dangerouslySetInnerHTML={{ __html: description }} />
+                <DialogTitle className="text-lg font-semibold">
+                  {title} Description
+                </DialogTitle>
+              </DialogHeader>
+              <TextEditor content={description} editable={false} />
             </DialogContent>
           </Dialog>
 

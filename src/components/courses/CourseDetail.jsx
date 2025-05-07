@@ -134,8 +134,8 @@ const CourseDetail = () => {
         <CardDescription className="text-md text-gray-700 w-auto max-w-xs bg-gray-50 rounded-lg border p-4 flex flex-col items-center gap-2">
           <Users className="inline w-6 h-6 text-primary" />
           <p className="font-medium text-center">
-            {course?.enrollments?.length}{" "}
-            {course?.enrollments?.length === 1 ? "Student" : "Students"}{" "}
+            {course?.enrollments?.length}
+            {course?.enrollments?.length === 1 ? "Student" : "Students"}
             Enrolled
           </p>
         </CardDescription>
