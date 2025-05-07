@@ -22,12 +22,13 @@ import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import { getCourseById } from "@/redux/slices/courseSlice";
 import LectureCard from "./LectureCard";
+import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
 
 const CourseSessionList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { courseId } = useParams();
-  const { sessions,loading } = useSelector((state) => state.session);
+  const { sessions, loading } = useSelector((state) => state.session);
   const { course } = useSelector((state) => state.course);
 
   useEffect(() => {
@@ -137,12 +138,12 @@ const CourseSessionList = () => {
                       >
                         Edit
                       </Button>
-                      <Button
-                        variant="destructive"
-                        onClick={() => handleDelete(session.id)}
-                      >
-                        Delete
-                      </Button>
+                      <ConfirmDeleteDialog
+                        onConfirm={() => handleDelete(session.id)}
+                        triggerText="Delete"
+                        title="Delete this session?"
+                        description="This will permanently remove the session."
+                      />
                     </div>
                   </AccordionContent>
                 </AccordionItem>

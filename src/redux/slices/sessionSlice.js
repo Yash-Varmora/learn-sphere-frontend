@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import sessionService from "@/services/sessionService";
+import lectureService from "@/services/lectureService";
 
 export const getSessionsByCourse = createAsyncThunk(
     "sessions/getByCourse",
@@ -73,9 +74,22 @@ export const completedSession = createAsyncThunk(
     }
 )
 
+export const deleteLecture = createAsyncThunk(
+    "sessions/deleteLecture",
+    async (lectureId, thunkAPI) => {
+        try {
+            await lectureService.deleteLecture(lectureId);
+            return lectureId;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
 const initialState = {
     sessions: [],
     completedSessions: {},
+    currentSession:null,
     loading: false,
     error: null,
 };
@@ -162,6 +176,27 @@ export const sessionSlice = createSlice({
                 };
             })
             .addCase(completedSession.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(deleteLecture.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deleteLecture.fulfilled, (state, action) => {
+                state.loading = false;
+                state.sessions = state.sessions.map(session => ({
+                    ...session,
+                    lectures: session.lectures ?
+                        session.lectures.filter(lecture => lecture.id !== action.payload) :
+                        []
+                }));
+                if (state.currentSession && state.currentSession.lectures) {
+                    state.currentSession.lectures = state.currentSession.lectures.filter(
+                        lecture => lecture.id !== action.payload
+                    );
+                }
+            })
+            .addCase(deleteLecture.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

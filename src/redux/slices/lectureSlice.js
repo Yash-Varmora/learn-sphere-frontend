@@ -47,18 +47,6 @@ export const updateLecture = createAsyncThunk(
     }
 );
 
-export const deleteLecture = createAsyncThunk(
-    "lectures/delete",
-    async (lectureId, thunkAPI) => {
-        try {
-            await lectureService.deleteLecture(lectureId);
-            return lectureId;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.response.data);
-        }
-    }
-);
-
 export const markLectureAsCompleted = createAsyncThunk(
     "lectures/markAsCompleted",
     async (lectureId, thunkAPI) => {
@@ -144,21 +132,6 @@ export const lectureSlice = createSlice({
                 );
             })
             .addCase(updateLecture.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(deleteLecture.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(deleteLecture.fulfilled, (state, action) => {
-                state.loading = false;
-                console.log(action.payload)
-                state.lectures = state.lectures.filter(
-                    (lecture) => lecture.id !== action.payload
-                );
-                console.log(state.lectures)
-            })
-            .addCase(deleteLecture.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

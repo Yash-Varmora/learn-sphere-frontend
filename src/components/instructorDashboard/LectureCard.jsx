@@ -7,13 +7,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { deleteLecture, setCurrentPlayingUrl } from "@/redux/slices/lectureSlice";
+import { setCurrentPlayingUrl } from "@/redux/slices/lectureSlice";
 import TextEditor from "../editor/TextEditor";
-import { getSessionById } from "@/redux/slices/sessionSlice";
+import { deleteLecture } from "@/redux/slices/sessionSlice";
+import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
 
 const LectureCard = ({
   title,
@@ -29,7 +36,9 @@ const LectureCard = ({
   const { currentPlayingLecture } = useSelector((state) => state.lecture);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const isPlaying = currentPlayingLecture.lectureUrl === lectureUrl && currentPlayingLecture.lectureId === lectureId;
+  const isPlaying =
+    currentPlayingLecture.lectureUrl === lectureUrl &&
+    currentPlayingLecture.lectureId === lectureId;
   const handlePlay = () => {
     if (!isPlaying) {
       dispatch(setCurrentPlayingUrl({ lectureUrl, lectureId }));
@@ -40,7 +49,6 @@ const LectureCard = ({
     dispatch(deleteLecture(id))
       .unwrap()
       .then(() => {
-        dispatch(getSessionById(courseId))
         toast.success("Lecture deleted successfully");
       })
       .catch((error) => {
@@ -100,12 +108,12 @@ const LectureCard = ({
             >
               Edit
             </Button>
-            <Button
-              variant="destructive"
-              onClick={() => handleDelete(lectureId)}
-            >
-              Delete
-            </Button>
+            <ConfirmDeleteDialog
+              onConfirm={() => handleDelete(lectureId)}
+              triggerText="Delete"
+              title="Delete this lecture?"
+              description="This will permanently remove the lecture."
+            />
           </div>
         </AccordionContent>
       </AccordionItem>

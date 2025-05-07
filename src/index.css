@@ -5,7 +5,6 @@ body {
   background-color: #f5f5f5;
 }
 
-
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
@@ -27,7 +26,6 @@ body {
   padding: 6px;
   margin: 6px;
 }
-
 
 @custom-variant dark (&:is(.dark *));
 
